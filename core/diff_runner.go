@@ -9,9 +9,15 @@ import (
 type DefaultDiffRunner struct{}
 
 func (d *DefaultDiffRunner) RunDiff(conflictFile, originalFile string, count int) error {
-	formattedCmd := fmt.Sprintf("diff --unified --ignore-all-space '%s' '%s'",
+	diffCmd := []string{
+		"diff",
+		"--unified",
+		"--ignore-all-space",
 		strings.ReplaceAll(conflictFile, "'", "'\"'\"'"),
-		strings.ReplaceAll(originalFile, "'", "'\"'\"'"))
+		strings.ReplaceAll(originalFile, "'", "'\"'\"'"),
+	}
+
+	formattedCmd := strings.Join(diffCmd, " ")
 
 	absConflictFile, _ := filepath.Abs(conflictFile)
 	absOriginalFile, _ := filepath.Abs(originalFile)
