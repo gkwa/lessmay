@@ -79,7 +79,8 @@ func Lint() error {
 		}
 	}
 
-	if rebuild, err := target.DirNewer(lintTime, sources...); err != nil || !rebuild {
+	if rebuild, err := target.DirNewer(lintTime, sources...); err != nil ||
+		!rebuild {
 		if err != nil {
 			return err
 		}
@@ -107,7 +108,8 @@ func Fmt() error {
 		}
 	}
 
-	if rebuild, err := target.DirNewer(fmtTime, sources...); err != nil || !rebuild {
+	if rebuild, err := target.DirNewer(fmtTime, sources...); err != nil ||
+		!rebuild {
 		if err != nil {
 			return err
 		}
@@ -135,7 +137,8 @@ func Vet() error {
 		}
 	}
 
-	if rebuild, err := target.DirNewer(vetTime, sources...); err != nil || !rebuild {
+	if rebuild, err := target.DirNewer(vetTime, sources...); err != nil ||
+		!rebuild {
 		if err != nil {
 			return err
 		}
@@ -162,7 +165,8 @@ func Tidy() error {
 		}
 	}
 
-	if rebuild, err := target.DirNewer(tidyTime, "go.mod", "go.sum"); err != nil || !rebuild {
+	if rebuild, err := target.DirNewer(tidyTime, "go.mod", "go.sum"); err != nil ||
+		!rebuild {
 		if err != nil {
 			return err
 		}
@@ -190,7 +194,8 @@ func Build() error {
 		return err
 	}
 	sources = append(sources, "go.mod", "go.sum")
-	if rebuild, err := target.DirNewer(buildTime, sources...); err != nil || !rebuild {
+	if rebuild, err := target.DirNewer(buildTime, sources...); err != nil ||
+		!rebuild {
 		if err != nil {
 			return err
 		}
@@ -234,20 +239,23 @@ func getSourceFiles(dir string, exts ...string) ([]string, error) {
 		}
 	}
 	var sources []string
-	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-		if !info.IsDir() {
-			for _, ext := range exts {
-				if filepath.Ext(path) == ext {
-					sources = append(sources, path)
-					break
+	err := filepath.Walk(
+		dir,
+		func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+			if !info.IsDir() {
+				for _, ext := range exts {
+					if filepath.Ext(path) == ext {
+						sources = append(sources, path)
+						break
+					}
 				}
 			}
-		}
-		return nil
-	})
+			return nil
+		},
+	)
 	if err != nil {
 		return nil, err
 	}

@@ -23,7 +23,9 @@ func NewSyncConflictResolver(logger logr.Logger) *SyncConflictResolver {
 	}
 }
 
-func (r *SyncConflictResolver) ResolveSyncConflicts(paths, skipPaths []string) error {
+func (r *SyncConflictResolver) ResolveSyncConflicts(
+	paths, skipPaths []string,
+) error {
 	r.logger.V(1).Info("Starting sync conflict resolution")
 
 	conflictFiles, err := r.finder.FindSyncConflictFiles(paths, skipPaths)
@@ -37,12 +39,23 @@ func (r *SyncConflictResolver) ResolveSyncConflicts(paths, skipPaths []string) e
 
 		deleted, err := r.comparer.CompareAndDelete(conflictFile, originalFile)
 		if err != nil {
-			r.logger.Error(err, "Failed to compare and delete files", "conflictFile", conflictFile, "originalFile", originalFile)
+			r.logger.Error(
+				err,
+				"Failed to compare and delete files",
+				"conflictFile",
+				conflictFile,
+				"originalFile",
+				originalFile,
+			)
 			continue
 		}
 
 		if deleted {
-			r.logger.Info("Deleted identical sync conflict file", "conflictFile", conflictFile)
+			r.logger.Info(
+				"Deleted identical sync conflict file",
+				"conflictFile",
+				conflictFile,
+			)
 		} else {
 			if err := r.differ.RunDiff(conflictFile, originalFile, i+1); err != nil {
 				r.logger.Error(err, "Failed to run diff", "conflictFile", conflictFile, "originalFile", originalFile)

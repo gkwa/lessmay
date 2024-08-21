@@ -27,7 +27,7 @@ iterate: check $(BIN)
 .PHONY: check # lint and vet
 check: .timestamps/.check.time
 
-.timestamps/.check.time: goimports tidy fmt lint vet
+.timestamps/.check.time: goimports tidy golines fmt lint vet
 	@mkdir -p .timestamps
 	@touch $@
 
@@ -70,7 +70,7 @@ fmt: .timestamps/.fmt.time
 .PHONY: golines # golines
 golines: .timestamps/.golines.time
 .timestamps/.golines.time: $(SRC)
-	golines -w $(SRC)
+	golines --max-len=80 --write-output $(SRC)
 	@mkdir -p .timestamps
 	@touch $@
 

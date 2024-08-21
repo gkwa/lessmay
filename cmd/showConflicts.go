@@ -30,5 +30,6 @@ func init() {
 
 	defaultObsidianPath = core.GetDefaultObsidianPath()
 
-	showConflictsCmd.Flags().StringVarP(&defaultObsidianPath, "default-path", "d", defaultObsidianPath, "Default Obsidian vault path")
+	showConflictsCmd.Flags().
+		StringVarP(&defaultObsidianPath, "default-path", "d", defaultObsidianPath, "Default Obsidian vault path")
 }

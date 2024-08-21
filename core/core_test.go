@@ -14,7 +14,9 @@ type mockFileFinder struct {
 	err   error
 }
 
-func (m *mockFileFinder) FindSyncConflictFiles(paths, skipPaths []string) ([]string, error) {
+func (m *mockFileFinder) FindSyncConflictFiles(
+	paths, skipPaths []string,
+) ([]string, error) {
 	return m.files, m.err
 }
 
@@ -27,7 +29,10 @@ type mockDiffRunner struct {
 	err error
 }
 
-func (m *mockDiffRunner) RunDiff(conflictFile, originalFile string, count int) error {
+func (m *mockDiffRunner) RunDiff(
+	conflictFile, originalFile string,
+	count int,
+) error {
 	m.calls = append(m.calls, struct {
 		conflictFile string
 		originalFile string
@@ -41,7 +46,9 @@ type mockFileComparer struct {
 	err     error
 }
 
-func (m *mockFileComparer) CompareAndDelete(conflictFile, originalFile string) (bool, error) {
+func (m *mockFileComparer) CompareAndDelete(
+	conflictFile, originalFile string,
+) (bool, error) {
 	return m.deleted, m.err
 }
 
@@ -58,8 +65,10 @@ func TestSyncConflictResolver_ResolveSyncConflicts(t *testing.T) {
 		expectErr       bool
 	}{
 		{
-			name:            "successful resolution",
-			files:           []string{"/path/to/file.sync-conflict-20240818-215425-I2NUVZU.md"},
+			name: "successful resolution",
+			files: []string{
+				"/path/to/file.sync-conflict-20240818-215425-I2NUVZU.md",
+			},
 			skipPaths:       []string{".trash"},
 			comparerDeleted: false,
 			expectedCalls:   1,
@@ -71,23 +80,29 @@ func TestSyncConflictResolver_ResolveSyncConflicts(t *testing.T) {
 			expectErr: true,
 		},
 		{
-			name:            "differ error",
-			files:           []string{"/path/to/file.sync-conflict-20240818-215425-I2NUVZU.md"},
+			name: "differ error",
+			files: []string{
+				"/path/to/file.sync-conflict-20240818-215425-I2NUVZU.md",
+			},
 			skipPaths:       []string{".trash"},
 			differErr:       errors.New("differ error"),
 			comparerDeleted: false,
 			expectedCalls:   1,
 		},
 		{
-			name:          "comparer error",
-			files:         []string{"/path/to/file.sync-conflict-20240818-215425-I2NUVZU.md"},
+			name: "comparer error",
+			files: []string{
+				"/path/to/file.sync-conflict-20240818-215425-I2NUVZU.md",
+			},
 			skipPaths:     []string{".trash"},
 			comparerErr:   errors.New("comparer error"),
 			expectedCalls: 0,
 		},
 		{
-			name:            "file deleted",
-			files:           []string{"/path/to/file.sync-conflict-20240818-215425-I2NUVZU.md"},
+			name: "file deleted",
+			files: []string{
+				"/path/to/file.sync-conflict-20240818-215425-I2NUVZU.md",
+			},
 			skipPaths:       []string{".trash"},
 			comparerDeleted: true,
 			expectedCalls:   0,
@@ -98,7 +113,10 @@ func TestSyncConflictResolver_ResolveSyncConflicts(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			finder := &mockFileFinder{files: tt.files, err: tt.finderErr}
 			differ := &mockDiffRunner{err: tt.differErr}
-			comparer := &mockFileComparer{deleted: tt.comparerDeleted, err: tt.comparerErr}
+			comparer := &mockFileComparer{
+				deleted: tt.comparerDeleted,
+				err:     tt.comparerErr,
+			}
 			logger := testr.New(t)
 
 			resolver := &SyncConflictResolver{
@@ -108,7 +126,10 @@ func TestSyncConflictResolver_ResolveSyncConflicts(t *testing.T) {
 				logger:   logger,
 			}
 
-			err := resolver.ResolveSyncConflicts([]string{"/test/path"}, tt.skipPaths)
+			err := resolver.ResolveSyncConflicts(
+				[]string{"/test/path"},
+				tt.skipPaths,
+			)
 
 			if tt.expectErr {
 				if err == nil {
@@ -121,7 +142,11 @@ func TestSyncConflictResolver_ResolveSyncConflicts(t *testing.T) {
 			}
 
 			if len(differ.calls) != tt.expectedCalls {
-				t.Errorf("Expected %d diff calls, but got %d", tt.expectedCalls, len(differ.calls))
+				t.Errorf(
+					"Expected %d diff calls, but got %d",
+					tt.expectedCalls,
+					len(differ.calls),
+				)
 			}
 		})
 	}
@@ -154,18 +179,32 @@ func TestDefaultFileFinder_FindSyncConflictFiles(t *testing.T) {
 	}
 
 	finder := &DefaultFileFinder{}
-	foundFiles, err := finder.FindSyncConflictFiles([]string{tempDir}, []string{".trash"})
+	foundFiles, err := finder.FindSyncConflictFiles(
+		[]string{tempDir},
+		[]string{".trash"},
+	)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
 	}
 
 	expectedFiles := []string{
-		filepath.Join(tempDir, "file1.sync-conflict-20240818-215425-I2NUVZU.md"),
-		filepath.Join(tempDir, "subdir", "file2.sync-conflict-20240818-215425-I2NUVZU.md"),
+		filepath.Join(
+			tempDir,
+			"file1.sync-conflict-20240818-215425-I2NUVZU.md",
+		),
+		filepath.Join(
+			tempDir,
+			"subdir",
+			"file2.sync-conflict-20240818-215425-I2NUVZU.md",
+		),
 	}
 
 	if len(foundFiles) != len(expectedFiles) {
-		t.Errorf("Expected %d files, but got %d", len(expectedFiles), len(foundFiles))
+		t.Errorf(
+			"Expected %d files, but got %d",
+			len(expectedFiles),
+			len(foundFiles),
+		)
 	}
 
 	for i, file := range foundFiles {
@@ -218,18 +257,27 @@ func TestDefaultFileComparer_CompareAndDelete(t *testing.T) {
 			}
 
 			comparer := &DefaultFileComparer{}
-			deleted, err := comparer.CompareAndDelete(conflictFile, originalFile)
+			deleted, err := comparer.CompareAndDelete(
+				conflictFile,
+				originalFile,
+			)
 			if err != nil {
 				t.Fatalf("CompareAndDelete failed: %v", err)
 			}
 
 			if deleted != tt.expectDeleted {
-				t.Errorf("Expected deleted to be %v, got %v", tt.expectDeleted, deleted)
+				t.Errorf(
+					"Expected deleted to be %v, got %v",
+					tt.expectDeleted,
+					deleted,
+				)
 			}
 
 			if tt.expectDeleted {
 				if _, err := os.Stat(conflictFile); !os.IsNotExist(err) {
-					t.Errorf("Expected conflict file to be deleted, but it still exists")
+					t.Errorf(
+						"Expected conflict file to be deleted, but it still exists",
+					)
 				}
 			} else {
 				if _, err := os.Stat(conflictFile); os.IsNotExist(err) {

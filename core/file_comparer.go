@@ -8,7 +8,9 @@ import (
 
 type DefaultFileComparer struct{}
 
-func (c *DefaultFileComparer) CompareAndDelete(conflictFile, originalFile string) (bool, error) {
+func (c *DefaultFileComparer) CompareAndDelete(
+	conflictFile, originalFile string,
+) (bool, error) {
 	conflictContent, err := os.ReadFile(conflictFile)
 	if err != nil {
 		return false, fmt.Errorf("error reading conflict file: %w", err)

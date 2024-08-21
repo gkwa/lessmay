@@ -8,7 +8,10 @@ import (
 
 type DefaultDiffRunner struct{}
 
-func (d *DefaultDiffRunner) RunDiff(conflictFile, originalFile string, count int) error {
+func (d *DefaultDiffRunner) RunDiff(
+	conflictFile, originalFile string,
+	count int,
+) error {
 	diffCmd := []string{
 		"diff",
 		"--unified",

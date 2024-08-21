@@ -44,10 +44,14 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.lessmay.yaml)")
-	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "enable verbose mode")
-	rootCmd.PersistentFlags().StringVar(&logFormat, "log-format", "", "json or text (default is text)")
-	rootCmd.PersistentFlags().StringSliceVar(&skipPaths, "skip-path", []string{".trash"}, "paths to skip (can be specified multiple times)")
+	rootCmd.PersistentFlags().
+		StringVar(&cfgFile, "config", "", "config file (default is $HOME/.lessmay.yaml)")
+	rootCmd.PersistentFlags().
+		BoolVarP(&verbose, "verbose", "v", false, "enable verbose mode")
+	rootCmd.PersistentFlags().
+		StringVar(&logFormat, "log-format", "", "json or text (default is text)")
+	rootCmd.PersistentFlags().
+		StringSliceVar(&skipPaths, "skip-path", []string{".trash"}, "paths to skip (can be specified multiple times)")
 
 	if err := viper.BindPFlag("verbose", rootCmd.PersistentFlags().Lookup("verbose")); err != nil {
 		fmt.Printf("Error binding verbose flag: %v\n", err)

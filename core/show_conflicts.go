@@ -9,7 +9,12 @@ import (
 	homedir "github.com/mitchellh/go-homedir"
 )
 
-func ShowConflicts(logger logr.Logger, args []string, defaultObsidianPath string, skipPaths []string) error {
+func ShowConflicts(
+	logger logr.Logger,
+	args []string,
+	defaultObsidianPath string,
+	skipPaths []string,
+) error {
 	paths, err := getConflictPaths(args, defaultObsidianPath)
 	if err != nil {
 		return fmt.Errorf("failed to get conflict paths: %w", err)
@@ -19,7 +24,10 @@ func ShowConflicts(logger logr.Logger, args []string, defaultObsidianPath string
 	return resolver.ResolveSyncConflicts(paths, skipPaths)
 }
 
-func getConflictPaths(args []string, defaultObsidianPath string) ([]string, error) {
+func getConflictPaths(
+	args []string,
+	defaultObsidianPath string,
+) ([]string, error) {
 	var paths []string
 	if len(args) == 0 {
 		paths = append(paths, defaultObsidianPath)
